@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ShareDataInNetwork"
         mc:Ignorable="d"
         x:Name="MainLoadWindow" Title="MainWindow" Height="600" Width="800" 
-        WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow">
+        WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow"
+        Closed="MainLoadWindow_Closed">
     <Window.Resources>
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
@@ -142,7 +143,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="170"/>
-                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
 
             <Label Grid.Row="0" Grid.Column="1" Content="Имя компьютера в сети: " Foreground="#FFADADC9" HorizontalAlignment="Right"/>

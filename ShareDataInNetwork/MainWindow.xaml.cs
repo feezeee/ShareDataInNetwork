@@ -23,12 +23,12 @@ namespace ShareDataInNetwork
     /// </summary>
     public partial class MainWindow : Window
     {
+        IPMethods MyNetwork = new IPMethods();
+        IPParametrs currentPC = new IPParametrs();
+
         public MainWindow()
         {
             InitializeComponent();
-
-            IPMethods MyNetwork = new IPMethods();
-            IPParametrs currentPC = new IPParametrs();
 
             currentPC.OnGettingCurrentHostName += CurrentPC_OnGettingCurrentHostName;
             currentPC.OnGettingIpAddressCurentPC += CurrentPC_OnGettingIpAddressCurentPC;
@@ -50,7 +50,10 @@ namespace ShareDataInNetwork
 
         private void CurrentPC_OnGettingNetworkInformationAboutPC(object sender, bool status)
         {
-            
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                ResetButton.IsEnabled = true;
+            });
         }
 
         private void CurrentPC_OnGettingBroadcastAddressCurentNetwork(object sender, bool status)
@@ -75,22 +78,49 @@ namespace ShareDataInNetwork
                 Application.Current.Dispatcher.Invoke((Action)delegate
                 {
                     ipCurrentPc.Content = sender;
+                    ipCurrentPc.MouseDoubleClick += IpCurrentPc_MouseDoubleClick;
                 });
           
         }
+
 
         private void CurrentPC_OnGettingCurrentHostName(object sender, bool status)
         {
                 Application.Current.Dispatcher.Invoke((Action)delegate
                 {
                     nameCurrentPc.Content = sender;
+                    nameCurrentPc.MouseDoubleClick += NameCurrentPc_MouseDoubleClick;
                 });
            
         }
 
+        private void NameCurrentPc_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Label myLabel = (Label)sender;
+                EditLabelWindow.MainWindow EditWindow = new EditLabelWindow.MainWindow(myLabel.Content.ToString());
+                if (EditWindow.ShowDialog() == true)
+                {
+                    myLabel.Content = EditWindow.Info;
+                    currentPC.SetNameInNetwork(EditWindow.Info);
+                }
+            }
+        }
 
-
-
+        private void IpCurrentPc_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Label myLabel = (Label)sender;
+                EditLabelWindow.MainWindow EditWindow = new EditLabelWindow.MainWindow(myLabel.Content.ToString());
+                if (EditWindow.ShowDialog() == true)
+                {
+                    myLabel.Content = EditWindow.Info;
+                    currentPC.SetNameInNetwork(EditWindow.Info);
+                }
+            }
+        }
         /// <summary>
         /// This variable shows searching status Эта переменная показывает статус поиска. 
         /// </summary>
@@ -123,7 +153,17 @@ namespace ShareDataInNetwork
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
+            ResetButton.IsEnabled = false;
+            nameCurrentPc.Content = "";
+            ipCurrentPc.Content = "";
+            subnetMaskCurrentPc.Content = "";
+            broadcastCurrentPc.Content = "";
+            currentPC.GetNetworkInformationAboutPCASYNC();
+        }
 
+        private void MainLoadWindow_Closed(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
 }

@@ -7,8 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EditLabelWindow\EditLabelWindow.csproj" />
-    <ProjectReference Include="..\MyNetworkInterface\MyNetworkInterface.csproj" />
+    <Page Update="EditForIP.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
 </Project>

@@ -85,19 +85,19 @@ namespace MyNetworkInterface
             return _subnetMask;
         }
 
-        private void SetNameInNetwork(string value)
+        public void SetNameInNetwork(string value)
         {
             _nameInNetwork = value;
         }
-        private void SetIpAddress(IPAddress value)
+        public void SetIpAddress(IPAddress value)
         {
             _ipAddress = value;
         }
-        private void SetBroadcastAddress(IPAddress value)
+        public void SetBroadcastAddress(IPAddress value)
         {
             _broadcastAddress = value;
         }
-        private void SetSubnetMask(IPAddress value)
+        public void SetSubnetMask(IPAddress value)
         {
             _subnetMask = value;
         }
