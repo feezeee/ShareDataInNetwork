@@ -48,6 +48,8 @@ namespace ShareDataInNetwork
             myThread.Start(); 
         }
 
+
+        #region Получение сетевой информации о пк
         private void CurrentPC_OnGettingNetworkInformationAboutPC(object sender, bool status)
         {
             Application.Current.Dispatcher.Invoke((Action)delegate
@@ -55,24 +57,23 @@ namespace ShareDataInNetwork
                 ResetButton.IsEnabled = true;
             });
         }
-
         private void CurrentPC_OnGettingBroadcastAddressCurentNetwork(object sender, bool status)
         {
                 Application.Current.Dispatcher.Invoke((Action)delegate
                 {
                     broadcastCurrentPc.Content = sender;
+                    broadcastCurrentPc.MouseLeftButtonDown += BroadcastCurrentPc_MouseLeftButtonDown;
                 });
              
         }
-
         private void CurrentPC_OnGettingSubnetMask(object sender, bool status)
         {            
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
                 subnetMaskCurrentPc.Content = sender;
+                subnetMaskCurrentPc.MouseDoubleClick += SubnetMaskCurrentPc_MouseDoubleClick;
             });
         }
-
         private void CurrentPC_OnGettingIpAddressCurentPC(object sender, bool status)
         {
                 Application.Current.Dispatcher.Invoke((Action)delegate
@@ -82,8 +83,6 @@ namespace ShareDataInNetwork
                 });
           
         }
-
-
         private void CurrentPC_OnGettingCurrentHostName(object sender, bool status)
         {
                 Application.Current.Dispatcher.Invoke((Action)delegate
@@ -93,13 +92,15 @@ namespace ShareDataInNetwork
                 });
            
         }
+        #endregion
 
+        #region Двойной клик по лабелам
         private void NameCurrentPc_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Label myLabel = (Label)sender;
-                EditLabelWindow.MainWindow EditWindow = new EditLabelWindow.MainWindow(myLabel.Content.ToString());
+                EditLabelWindow.MainWindow EditWindow = new EditLabelWindow.MainWindow(currentPC.ReturnNameInNetwork());
                 if (EditWindow.ShowDialog() == true)
                 {
                     myLabel.Content = EditWindow.Info;
@@ -107,20 +108,44 @@ namespace ShareDataInNetwork
                 }
             }
         }
-
         private void IpCurrentPc_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Label myLabel = (Label)sender;
-                EditLabelWindow.MainWindow EditWindow = new EditLabelWindow.MainWindow(myLabel.Content.ToString());
+                EditLabelWindow.EditForIP EditWindow = new EditLabelWindow.EditForIP(currentPC.ReturnIpAddress(), EditLabelWindow.EditForIP.Modes.SimplyIP);
                 if (EditWindow.ShowDialog() == true)
                 {
-                    myLabel.Content = EditWindow.Info;
-                    currentPC.SetNameInNetwork(EditWindow.Info);
+                    myLabel.Content = EditWindow.Info().ToString();
+                    currentPC.SetIpAddress(EditWindow.Info());
                 }
             }
         }
+        private void SubnetMaskCurrentPc_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Label myLabel = (Label)sender;
+                EditLabelWindow.EditForIP EditWindow = new EditLabelWindow.EditForIP(currentPC.ReturnSubnetMask(),EditLabelWindow.EditForIP.Modes.SubnetIP);
+                if (EditWindow.ShowDialog() == true)
+                {
+                    myLabel.Content = EditWindow.Info().ToString();
+                    currentPC.SetIpAddress(EditWindow.Info());
+                }
+            }
+        }
+        private void BroadcastCurrentPc_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                currentPC.GetBroadcastAddressCurentNetworkASYNC();
+            }
+        }
+
+        #endregion
+
+
+
         /// <summary>
         /// This variable shows searching status Эта переменная показывает статус поиска. 
         /// </summary>
