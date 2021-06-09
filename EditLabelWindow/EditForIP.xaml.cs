@@ -58,10 +58,10 @@ namespace EditLabelWindow
                 try
                 {
                     bool status = true;
-                    int first = int.Parse(renameBox1.Text);
-                    int second = int.Parse(renameBox2.Text);
-                    int third = int.Parse(renameBox3.Text);
-                    int fourth = int.Parse(renameBox2.Text);
+                    byte first = byte.Parse(renameBox1.Text);
+                    byte second = byte.Parse(renameBox2.Text);
+                    byte third = byte.Parse(renameBox3.Text);
+                    byte fourth = byte.Parse(renameBox4.Text);
 
                     if (first < 0 || first > 255)
                     {
@@ -96,39 +96,40 @@ namespace EditLabelWindow
             {
                 try
                 {
-                    
-                    bool status = true;
-                    byte first = byte.Parse(renameBox1.Text);                    
+                    pred = -1;
+                    bool status = true;  
+
+                    byte first = byte.Parse(renameBox1.Text);
                     byte second = byte.Parse(renameBox2.Text);
                     byte third = byte.Parse(renameBox3.Text);
-                    byte fourth = byte.Parse(renameBox2.Text);
+                    byte fourth = byte.Parse(renameBox4.Text);
 
-                    CheckingCorrect(first);
-
-                    if (first < 0 || first > 255)
+                    if (!CheckingCorrect(first))
                     {
                         MessageBox.Show("Исправьте первый октет!");
                         status = false;
                     }
-                    if (second < 0 || second > 255)
+                    if (!CheckingCorrect(second))
                     {
                         MessageBox.Show("Исправьте второй октет!");
                         status = false;
                     }
-                    if (third < 0 || third > 255)
+                    if (!CheckingCorrect(third))
                     {
                         MessageBox.Show("Исправьте третий октет!");
                         status = false;
                     }
-                    if (fourth < 0 || fourth > 255)
+                    if (!CheckingCorrect(fourth))
                     {
                         MessageBox.Show("Исправьте четвертый октет!");
                         status = false;
                     }
 
-                    
 
-                    if (status) this.DialogResult = true;
+                    if (status)
+                    {
+                        this.DialogResult = true;
+                    }
                 }
                 catch
                 {
@@ -139,31 +140,98 @@ namespace EditLabelWindow
 
         private void ConvertIp (IPAddress value)
         {
-            byte[] ipAdressBytes = value.GetAddressBytes();
-            renameBox1.Text = ipAdressBytes[0].ToString();
-            renameBox2.Text = ipAdressBytes[1].ToString();
-            renameBox3.Text = ipAdressBytes[2].ToString();
-            renameBox4.Text = ipAdressBytes[3].ToString();
+            try
+            {
+                if (value != null)
+                {
+                    byte[] ipAdressBytes = value.GetAddressBytes();
+                    renameBox1.Text = ipAdressBytes[0].ToString();
+                    renameBox2.Text = ipAdressBytes[1].ToString();
+                    renameBox3.Text = ipAdressBytes[2].ToString();
+                    renameBox4.Text = ipAdressBytes[3].ToString();
+                }
+                else
+                {
+                    renameBox1.Text = "0";
+                    renameBox2.Text = "0";
+                    renameBox3.Text = "0";
+                    renameBox4.Text = "0";
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Ошибка в конвертировании ip в string");
+            }
         }
 
+
+        int pred = -1;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="pred"> Значение предыдущего октета либо 1 если число 255 либо 0 если другое</param>
+        /// <returns></returns>
         private bool CheckingCorrect(int value)
         {
-            bool status = false;
-            BitArray strBytes = new BitArray(value);
-            for (int i = 0; i < strBytes.Length; i++)
+            try
             {
-                //if (strBytes[i] == 0 && !false)
-                //{
-                //    status = true;
-                //}
+                if (value < 0 || value > 255)
+                {
+                    throw new ArgumentOutOfRangeException($"{value} должно быть от 0 до 255");
+                }
+                if (pred == 0 && value == 0)
+                {
+                    return true;
+                }
+                if (pred != 0 && value == 0)
+                {
+                    pred = 0;
+                    return true;
+                }
+                if (pred != 0)
+                {
+                    for (int i = 7; i != -1; i--)
+                    {
+                        value = value - (int)Math.Pow(2, i);
+                        if (value == 0 && i > 0)
+                        {
+                            pred = 0;
+                            return true;
+                        }
+                        else if (value == 0 && i == 0)
+                        {
+                            pred = 1;
+                            return true;
+                        }
+                        else if (value < 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return false;
             }
-            return true;
+            catch
+            {
+                MessageBox.Show("Ошибка проверки на правильность ввода маски подсети!");
+                return false;
+            }
         }
 
         public IPAddress Info()
         {
-            string address = renameBox1.Text + "." + renameBox2.Text + "." + renameBox3.Text + "." + renameBox4.Text;
-            return IPAddress.Parse(address);
+            try
+            {
+                string address = renameBox1.Text + "." + renameBox2.Text + "." + renameBox3.Text + "." + renameBox4.Text;
+                IPAddress ip = IPAddress.Parse(address);
+                return ip;
+            }
+            catch
+            {
+                MessageBox.Show("Ошибка в преобразовании string в ip");
+                return null;
+            }
         }
     }
 }

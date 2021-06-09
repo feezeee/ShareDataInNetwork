@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ShareDataInNetwork"
+        xmlns:local="clr-namespace:ShareDataInNetwork" 
+        xmlns:uc="clr-namespace:ShareDataInNetwork.User_Controls"
         mc:Ignorable="d"
         x:Name="MainLoadWindow" Title="MainWindow" Height="600" Width="800" 
         WindowStartupLocation="CenterScreen" WindowStyle="ThreeDBorderWindow"
@@ -74,10 +75,10 @@
                         <Grid x:Name="grid">
                             <Border x:Name="border" CornerRadius="8" 
                                     BorderBrush="{TemplateBinding Background}" 
-                                    BorderThickness="2" Background="{TemplateBinding Background}" >                               
+                                    BorderThickness="2" Background="{TemplateBinding Background}" >
                                 <ContentPresenter HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
-                                          TextElement.FontWeight="Bold">                                    
+                                          TextElement.FontWeight="Bold">
                                 </ContentPresenter>
                             </Border>
 
@@ -126,12 +127,14 @@
             <RowDefinition Height="80"/>
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="2" x:Name="searchingbrn" VerticalAlignment="Top" 
-                HorizontalAlignment="Center" Height="50" Content="Find"
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Height="auto" Width="auto" HorizontalAlignment="Center" Margin="60,0,0,0">
+            <Button Grid.Row="2" x:Name="searchingbrn" VerticalAlignment="Top" Height="60" Content="Начать поиск"
                 Click="Searching_Click" Width="300" FontSize="16" Foreground="White" 
                 Style="{DynamicResource RoundCorner}" Background="#FF2781BF">
-        </Button>
-
+            </Button>
+            <uc:LoadingGIF x:Name="StartSearchLoad" Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        </StackPanel>
+        
         <Grid Grid.Row="0" Height="150">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -145,6 +148,8 @@
                 <ColumnDefinition Width="170"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
+
+
 
             <Label Grid.Row="0" Grid.Column="1" Content="Имя компьютера в сети: " Foreground="#FFADADC9" HorizontalAlignment="Right"/>
             <Label Grid.Row="1" Grid.Column="1" Content="Ip адресс в сети: " Foreground="#FFADADC9" HorizontalAlignment="Right"/>
@@ -164,7 +169,7 @@
                     Width="100" Height="20" Margin="5,0,20,0" VerticalAlignment="Center" Content="Сброс"
                     Click="ResetButton_Click" IsEnabled="False" />
         </Grid>
-        <!--<Label x:Name="LabelMyIp" Grid.Row="0" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,30,0,0"/>-->
+
         <Grid Grid.Row="1" Margin="0,0,0,50" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30"/>
@@ -172,44 +177,12 @@
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
 
-            <!--<Image x:Name="image_left" Source="left.png" Grid.Column="0" MouseEnter="image_left_MouseEnter" MouseLeave="image_left_MouseLeave" Grid.RowSpan="2" Opacity="0.2">
-               
-                -->
-            <!--<Image.Style>
-                    <Style>
-                        <Style.Triggers>
-                            <EventTrigger RoutedEvent="UIElement.MouseLeave">
-                                <EventTrigger.Actions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                 To="50" By="1" Duration="0:0:0.1"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger.Actions>
-                            </EventTrigger>
-                            <EventTrigger RoutedEvent="UIElement.MouseEnter">
-                                <EventTrigger.Actions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                                 To="100" By="1" Duration="0:0:0.1"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger.Actions>
-                            </EventTrigger>                            
-                        </Style.Triggers>
-                    </Style>
-                </Image.Style>-->
-            <!--
-            </Image>-->
-
-
-            <ScrollViewer x:Name="scroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Grid.Row="1" Foreground="{x:Null}">
-                <StackPanel x:Name="PlaceForFindedPC" Orientation="Horizontal" Height="auto" Width="auto"/>
-            </ScrollViewer>
-
-            <!--<Image x:Name="image_right" Source="right.png" Grid.Column="2" MouseEnter="image_right_MouseEnter" MouseLeave="image_right_MouseLeave" Grid.RowSpan="2"/>-->
+            <Border BorderBrush="#FF9FBBB9" BorderThickness="2" Grid.Column="1">                
+                <ScrollViewer x:Name="scroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0" Grid.Row="1" Foreground="{x:Null}">
+                    <StackPanel x:Name="PlaceForFindedPC" Orientation="Horizontal" Height="auto" Width="auto">
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
 
         </Grid>
     </Grid>

@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShareDataInNetwork", "Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyNetworkInterface", "MyNetworkInterface\MyNetworkInterface.csproj", "{4E007AFB-AC33-4DA4-A582-2A8652426142}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditLabelWindow", "EditLabelWindow\EditLabelWindow.csproj", "{629B913C-D288-40ED-9E65-F9C5A2E6FDDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EditLabelWindow", "EditLabelWindow\EditLabelWindow.csproj", "{629B913C-D288-40ED-9E65-F9C5A2E6FDDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

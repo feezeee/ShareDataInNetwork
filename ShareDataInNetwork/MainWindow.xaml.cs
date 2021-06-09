@@ -30,12 +30,18 @@ namespace ShareDataInNetwork
         {
             InitializeComponent();
 
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////
             currentPC.OnGettingCurrentHostName += CurrentPC_OnGettingCurrentHostName;
             currentPC.OnGettingIpAddressCurentPC += CurrentPC_OnGettingIpAddressCurentPC;
             currentPC.OnGettingSubnetMask += CurrentPC_OnGettingSubnetMask;
             currentPC.OnGettingBroadcastAddressCurentNetwork += CurrentPC_OnGettingBroadcastAddressCurentNetwork;
-
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////
             currentPC.OnGettingNetworkInformationAboutPC += CurrentPC_OnGettingNetworkInformationAboutPC;
+
+
 
             currentPC.GetNetworkInformationAboutPCASYNC();        
 
@@ -57,12 +63,13 @@ namespace ShareDataInNetwork
                 ResetButton.IsEnabled = true;
             });
         }
+
         private void CurrentPC_OnGettingBroadcastAddressCurentNetwork(object sender, bool status)
         {
                 Application.Current.Dispatcher.Invoke((Action)delegate
                 {
                     broadcastCurrentPc.Content = sender;
-                    broadcastCurrentPc.MouseLeftButtonDown += BroadcastCurrentPc_MouseLeftButtonDown;
+                    broadcastCurrentPc.MouseDoubleClick += BroadcastCurrentPc_MouseDoubleClick;
                 });
              
         }
@@ -113,7 +120,9 @@ namespace ShareDataInNetwork
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Label myLabel = (Label)sender;
+
                 EditLabelWindow.EditForIP EditWindow = new EditLabelWindow.EditForIP(currentPC.ReturnIpAddress(), EditLabelWindow.EditForIP.Modes.SimplyIP);
+
                 if (EditWindow.ShowDialog() == true)
                 {
                     myLabel.Content = EditWindow.Info().ToString();
@@ -130,18 +139,17 @@ namespace ShareDataInNetwork
                 if (EditWindow.ShowDialog() == true)
                 {
                     myLabel.Content = EditWindow.Info().ToString();
-                    currentPC.SetIpAddress(EditWindow.Info());
+                    currentPC.SetSubnetMask(EditWindow.Info());
                 }
             }
         }
-        private void BroadcastCurrentPc_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void BroadcastCurrentPc_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 currentPC.GetBroadcastAddressCurentNetworkASYNC();
             }
         }
-
         #endregion
 
 
@@ -164,17 +172,51 @@ namespace ShareDataInNetwork
                 if (SearchingStatus && !Search)
                 {
                     Search = true;
+                    broadcastCurrentPc.MouseDoubleClick -= BroadcastCurrentPc_MouseDoubleClick;
+                    subnetMaskCurrentPc.MouseDoubleClick -= SubnetMaskCurrentPc_MouseDoubleClick;
+                    ipCurrentPc.MouseDoubleClick -= IpCurrentPc_MouseDoubleClick;
+                    nameCurrentPc.MouseDoubleClick -= NameCurrentPc_MouseDoubleClick;
+                    
+                    Application.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        ResetButton.IsEnabled = false;
+                        StartSearchLoad.Opacity = 0;
+                        searchingbrn.Content = "Стоп";
+                        searchingbrn.IsEnabled = false;
+                        _EnableBtn();
+                    });
                     // запускаем
                 }
                 if (Search && !SearchingStatus)
                 {
                     Search = false;
+                    broadcastCurrentPc.MouseDoubleClick += BroadcastCurrentPc_MouseDoubleClick;
+                    subnetMaskCurrentPc.MouseDoubleClick += SubnetMaskCurrentPc_MouseDoubleClick;
+                    ipCurrentPc.MouseDoubleClick += IpCurrentPc_MouseDoubleClick;
+                    nameCurrentPc.MouseDoubleClick += NameCurrentPc_MouseDoubleClick;
+
+                    Application.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        ResetButton.IsEnabled = true;
+                        searchingbrn.Content = "Начать поиск";
+                        StartSearchLoad.Opacity = 100;
+                    });
                     // останавливаем
                 }
             }            
         }
 
-
+        private async void _EnableBtn()
+        {
+            await Task.Run(() =>
+            {
+                Thread.Sleep(5000); 
+                Application.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    searchingbrn.IsEnabled = true;
+                });
+            });
+        }
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
