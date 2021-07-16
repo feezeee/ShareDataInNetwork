@@ -23,6 +23,7 @@ namespace ShareDataInNetwork
     /// </summary>
     public partial class MainWindow : Window
     {
+        
         IPMethods MyNetwork = new IPMethods();
         IPParametrs currentPC = new IPParametrs();
 
