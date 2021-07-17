@@ -182,11 +182,11 @@ namespace ShareDataInNetwork
                     Application.Current.Dispatcher.Invoke((Action)delegate
                     {
                         ResetButton.IsEnabled = false;
-                        StartSearchLoad.Opacity = 0;
+                        //StartSearchLoad.Opacity = 0;
                         searchingbrn.Content = "Стоп";
                         searchingbrn.IsEnabled = false;
                         _EnableBtn();
-                        Initializing_PC(currentPC.ReturnNameInNetwork(), currentPC.ReturnIpAddress());
+                        //Initializing_PC(currentPC.ReturnNameInNetwork(), currentPC.ReturnIpAddress());
                     });
                     // запускаем
                 }
@@ -202,7 +202,7 @@ namespace ShareDataInNetwork
                     {
                         ResetButton.IsEnabled = true;
                         searchingbrn.Content = "Начать поиск";
-                        StartSearchLoad.Opacity = 100;
+                        //StartSearchLoad.Opacity = 100;
                     });
                     // останавливаем
                 }
