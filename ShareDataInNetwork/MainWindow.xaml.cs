@@ -24,8 +24,8 @@ namespace ShareDataInNetwork
     public partial class MainWindow : Window
     {
         
-        IPMethods MyNetwork = new IPMethods();
-        IPParametrs currentPC = new IPParametrs();
+        IpMethods _myNetwork = new IpMethods();
+        IpParametrs _currentPc = new IpParametrs();
 
         public MainWindow()
         {
@@ -34,21 +34,21 @@ namespace ShareDataInNetwork
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
-            currentPC.OnGettingCurrentHostName += CurrentPC_OnGettingCurrentHostName;
-            currentPC.OnGettingIpAddressCurentPC += CurrentPC_OnGettingIpAddressCurentPC;
-            currentPC.OnGettingSubnetMask += CurrentPC_OnGettingSubnetMask;
-            currentPC.OnGettingBroadcastAddressCurentNetwork += CurrentPC_OnGettingBroadcastAddressCurentNetwork;
+            _currentPc.OnGettingCurrentHostName += CurrentPC_OnGettingCurrentHostName;
+            _currentPc.OnGettingIpAddressCurentPc += CurrentPC_OnGettingIpAddressCurentPC;
+            _currentPc.OnGettingSubnetMask += CurrentPC_OnGettingSubnetMask;
+            _currentPc.OnGettingBroadcastAddressCurentNetwork += CurrentPC_OnGettingBroadcastAddressCurentNetwork;
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
-            currentPC.OnGettingNetworkInformationAboutPC += CurrentPC_OnGettingNetworkInformationAboutPC;
+            _currentPc.OnGettingNetworkInformationAboutPc += CurrentPC_OnGettingNetworkInformationAboutPC;
 
 
 
-            currentPC.GetNetworkInformationAboutPCASYNC();        
+            _currentPc.GetNetworkInformationAboutPcasync();        
 
 
 
-            MyNetwork.AddingNewPCInList(currentPC);
+            _myNetwork.AddingNewPcInList(_currentPc);
 
             // Запускаем поток по определению начать поиск пк в сети или нет.
             Thread myThread = new Thread(new ThreadStart(CheckingSearchingStatus));
@@ -108,11 +108,11 @@ namespace ShareDataInNetwork
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Label myLabel = (Label)sender;
-                EditLabelWindow.MainWindow EditWindow = new EditLabelWindow.MainWindow(currentPC.ReturnNameInNetwork());
-                if (EditWindow.ShowDialog() == true)
+                EditLabelWindow.MainWindow editWindow = new EditLabelWindow.MainWindow(_currentPc.ReturnNameInNetwork());
+                if (editWindow.ShowDialog() == true)
                 {
-                    myLabel.Content = EditWindow.Info;
-                    currentPC.SetNameInNetwork(EditWindow.Info);
+                    myLabel.Content = editWindow.Info;
+                    _currentPc.SetNameInNetwork(editWindow.Info);
                 }
             }
         }
@@ -122,12 +122,12 @@ namespace ShareDataInNetwork
             {
                 Label myLabel = (Label)sender;
 
-                EditLabelWindow.EditForIP EditWindow = new EditLabelWindow.EditForIP(currentPC.ReturnIpAddress(), EditLabelWindow.EditForIP.Modes.SimplyIP);
+                EditLabelWindow.EditForIp editWindow = new EditLabelWindow.EditForIp(_currentPc.ReturnIpAddress(), EditLabelWindow.EditForIp.Modes.SimplyIp);
 
-                if (EditWindow.ShowDialog() == true)
+                if (editWindow.ShowDialog() == true)
                 {
-                    myLabel.Content = EditWindow.Info().ToString();
-                    currentPC.SetIpAddress(EditWindow.Info());
+                    myLabel.Content = editWindow.Info().ToString();
+                    _currentPc.SetIpAddress(editWindow.Info());
                 }
             }
         }
@@ -136,11 +136,11 @@ namespace ShareDataInNetwork
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Label myLabel = (Label)sender;
-                EditLabelWindow.EditForIP EditWindow = new EditLabelWindow.EditForIP(currentPC.ReturnSubnetMask(),EditLabelWindow.EditForIP.Modes.SubnetIP);
-                if (EditWindow.ShowDialog() == true)
+                EditLabelWindow.EditForIp editWindow = new EditLabelWindow.EditForIp(_currentPc.ReturnSubnetMask(),EditLabelWindow.EditForIp.Modes.SubnetIp);
+                if (editWindow.ShowDialog() == true)
                 {
-                    myLabel.Content = EditWindow.Info().ToString();
-                    currentPC.SetSubnetMask(EditWindow.Info());
+                    myLabel.Content = editWindow.Info().ToString();
+                    _currentPc.SetSubnetMask(editWindow.Info());
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace ShareDataInNetwork
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                currentPC.GetBroadcastAddressCurentNetworkASYNC();
+                _currentPc.GetBroadcastAddressCurentNetworkAsync();
             }
         }
         #endregion
@@ -158,21 +158,21 @@ namespace ShareDataInNetwork
         /// <summary>
         /// This variable shows searching status Эта переменная показывает статус поиска. 
         /// </summary>
-        private bool SearchingStatus = false;
+        private bool _searchingStatus = false;
         private void Searching_Click(object sender, RoutedEventArgs e)
         {
-            SearchingStatus = !SearchingStatus;            
+            _searchingStatus = !_searchingStatus;            
         }
 
 
-        private bool Search = false;
+        private bool _search = false;
         private void CheckingSearchingStatus()
         {
             while (true)
             {
-                if (SearchingStatus && !Search)
+                if (_searchingStatus && !_search)
                 {
-                    Search = true;
+                    _search = true;
                     broadcastCurrentPc.MouseDoubleClick -= BroadcastCurrentPc_MouseDoubleClick;
                     subnetMaskCurrentPc.MouseDoubleClick -= SubnetMaskCurrentPc_MouseDoubleClick;
                     ipCurrentPc.MouseDoubleClick -= IpCurrentPc_MouseDoubleClick;
@@ -188,9 +188,9 @@ namespace ShareDataInNetwork
                     });
                     // запускаем
                 }
-                if (Search && !SearchingStatus)
+                if (_search && !_searchingStatus)
                 {
-                    Search = false;
+                    _search = false;
                     broadcastCurrentPc.MouseDoubleClick += BroadcastCurrentPc_MouseDoubleClick;
                     subnetMaskCurrentPc.MouseDoubleClick += SubnetMaskCurrentPc_MouseDoubleClick;
                     ipCurrentPc.MouseDoubleClick += IpCurrentPc_MouseDoubleClick;
@@ -226,7 +226,7 @@ namespace ShareDataInNetwork
             ipCurrentPc.Content = "";
             subnetMaskCurrentPc.Content = "";
             broadcastCurrentPc.Content = "";
-            currentPC.GetNetworkInformationAboutPCASYNC();
+            _currentPc.GetNetworkInformationAboutPcasync();
         }
 
         private void MainLoadWindow_Closed(object sender, EventArgs e)

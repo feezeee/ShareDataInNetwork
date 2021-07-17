@@ -132,7 +132,7 @@
                 Click="Searching_Click" Width="300" FontSize="16" Foreground="White" 
                 Style="{DynamicResource RoundCorner}" Background="#FF2781BF">
             </Button>
-            <uc:LoadingGIF x:Name="StartSearchLoad" Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            <uc:LoadingGif x:Name="StartSearchLoad" Grid.Row="2" VerticalAlignment="Top" HorizontalAlignment="Left"/>
         </StackPanel>
         
         <Grid Grid.Row="0" Height="150">
