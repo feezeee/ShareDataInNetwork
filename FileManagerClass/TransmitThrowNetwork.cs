@@ -1,8 +1,15 @@
-﻿namespace FileManagerClass
+﻿using MyNetworkInterface;
+
+namespace FileManagerClass
 {
-    public class TransmitThrowNetwork : ITransmitThrowNetwork
+    public class TransmitNetwork : ITransmitThrowNetwork
     {
-        public void TransmitThrowNetwork()
+        /// <summary>
+        /// Метод передачи данных.
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        
+        public void Transmit(IpParametrs pcLocal, string pathLocal, IpParametrs pcRemote, string pathRemote)
         {
             
         }

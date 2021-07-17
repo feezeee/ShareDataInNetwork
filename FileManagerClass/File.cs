@@ -11,7 +11,7 @@ namespace FileManagerClass
         private int _sizeOfFile;
         private string _nameOfFile;
         private string _path;
-        private IpParametrs _currentPc;
+        private IpParametrs _localPc;
         private IpParametrs _remotePc;
 
         public File() : this(-1)
@@ -35,20 +35,20 @@ namespace FileManagerClass
             Path = path;
         }
 
-        public File(int sizeOfFile, string nameOfFile, string path, IpParametrs currentPc) : 
-            this(sizeOfFile, nameOfFile, path, currentPc, null)
+        public File(int sizeOfFile, string nameOfFile, string path, IpParametrs localPc) : 
+            this(sizeOfFile, nameOfFile, path, localPc, null)
         {
             SizeOfFile = sizeOfFile;
             NameOfFile = nameOfFile;
             Path = path;
-            _currentPc = currentPc;
+            _localPc = localPc;
         }
-        public File(int sizeOfFile, string nameOfFile, string path, IpParametrs currentPc, IpParametrs remotePc)
+        public File(int sizeOfFile, string nameOfFile, string path, IpParametrs localPc, IpParametrs remotePc)
         {
             SizeOfFile = sizeOfFile;
             NameOfFile = nameOfFile;
             Path = path;
-            _currentPc = currentPc;
+            _localPc = localPc;
             _remotePc = remotePc;
         }
 
@@ -80,9 +80,9 @@ namespace FileManagerClass
         }
 
 
-        public override void Transmit(ITransmitThrowNetwork transmitThrowNetwork)
+        public override void Transmit(ITransmitThrowNetwork transmitThrowNetwork, IpParametrs pcLocal, IpParametrs pcRemote, string pathRemote)
         {
-            transmitThrowNetwork?.TransmitThrowNetwork();
+            transmitThrowNetwork?.Transmit(pcLocal, Path, pcRemote, pathRemote);
         }
 
         public override void Transmit(ITransmitInConsole transmitInConsole)

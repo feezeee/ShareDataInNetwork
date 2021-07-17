@@ -27,37 +27,42 @@ namespace ShareDataInNetwork
         
         IpMethods _myNetwork = new IpMethods();
         IpParametrs _currentPc = new IpParametrs();
-
         public MainWindow()
         {
             InitializeComponent();
-
-
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            // Событие возникает при определении имени пк.
             _currentPc.OnGettingCurrentHostName += CurrentPC_OnGettingCurrentHostName;
+            
+            // Событие возникает при определении ip-адреса пк.
             _currentPc.OnGettingIpAddressCurentPc += CurrentPC_OnGettingIpAddressCurentPC;
+            
+            // Событие возникает при определении маски подсети пк.
             _currentPc.OnGettingSubnetMask += CurrentPC_OnGettingSubnetMask;
+            
+            // Событие возникает при определении широковещательного адреса сети, в которой находится пк.
             _currentPc.OnGettingBroadcastAddressCurentNetwork += CurrentPC_OnGettingBroadcastAddressCurentNetwork;
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            // Событие возникает при окончании получения информации о пк.
             _currentPc.OnGettingNetworkInformationAboutPc += CurrentPC_OnGettingNetworkInformationAboutPC;
 
-
-
-            _currentPc.GetNetworkInformationAboutPcasync();        
-
-
-
+            // Вызываем метод получения сетевой информации о пк (ASYNC).
+            _currentPc.GetNetworkInformationAboutPcasync();
+            
+            // Добавляем в List данный пк. Данный List содержит информацию о сети (к каким устройствам имеет доступ данный пк).
             _myNetwork.AddingNewPcInList(_currentPc);
 
-            // Запускаем поток по определению начать поиск пк в сети или нет.
+            _myNetwork.ReceivedInformationEvent += AddingPc;
+            
+            // Определение потока. Анализ сети, в которой находится данный пк.
             Thread myThread = new Thread(new ThreadStart(CheckingSearchingStatus));
+            
+            // Запуск потока.
             myThread.Start(); 
         }
 
 
-        #region Получение сетевой информации о пк
+        #region Получение сетевой информации о пк и отображение ее на экране приложения
         private void CurrentPC_OnGettingNetworkInformationAboutPC(object sender, bool status)
         {
             Application.Current.Dispatcher.Invoke((Action)delegate
@@ -103,7 +108,7 @@ namespace ShareDataInNetwork
         }
         #endregion
 
-        #region Двойной клик по лабелам
+        #region Двойной клик по лабелам для последующего изменения их содержимого
         private void NameCurrentPc_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -157,7 +162,7 @@ namespace ShareDataInNetwork
 
 
         /// <summary>
-        /// This variable shows searching status Эта переменная показывает статус поиска. 
+        /// This variable shows searching status. Эта переменная показывает статус поиска. 
         /// </summary>
         private bool _searchingStatus = false;
         private void Searching_Click(object sender, RoutedEventArgs e)
@@ -169,6 +174,10 @@ namespace ShareDataInNetwork
         private bool _search = false;
         private void CheckingSearchingStatus()
         {
+            Thread sendBroadcastMessage = new Thread(new ThreadStart(_myNetwork.SendBroadcastOfferToConnect));
+            sendBroadcastMessage.Start();
+            Thread receiveBroadcastMessage = new Thread(new ThreadStart(_myNetwork.ReciveBroadcastOffer));
+            receiveBroadcastMessage.Start();
             while (true)
             {
                 if (_searchingStatus && !_search)
@@ -208,7 +217,7 @@ namespace ShareDataInNetwork
                 }
             }            
         }
-
+        
         private async void _EnableBtn()
         {
             await Task.Run(() =>
@@ -221,6 +230,18 @@ namespace ShareDataInNetwork
             });
         }
 
+        private void AddingPc(object sender, bool status)
+        {
+            if (status)
+            {
+                IpParametrs remotePc = (IpParametrs) sender;
+                
+                Thread myThread = new Thread(new ParameterizedThreadStart(_myNetwork.AddingNewPcInList));
+                myThread.Start(remotePc);
+                
+                Initializing_PC(remotePc.ReturnNameInNetwork(),remotePc.ReturnIpAddress());
+            }
+        }
 
         /// <summary>
         /// Initializing the found PC/Инициализация найденного компьютера
@@ -257,6 +278,7 @@ namespace ShareDataInNetwork
 
         private void MainLoadWindow_Closed(object sender, EventArgs e)
         {
+            System.Diagnostics.Process.GetCurrentProcess().Dispose();
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
