@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MyNetworkInterface;
+using ShareDataInNetwork.User_Controls;
 
 namespace ShareDataInNetwork
 {
@@ -184,6 +185,7 @@ namespace ShareDataInNetwork
                         searchingbrn.Content = "Стоп";
                         searchingbrn.IsEnabled = false;
                         _EnableBtn();
+                        Initializing_PC(currentPC.ReturnNameInNetwork(), currentPC.ReturnIpAddress());
                     });
                     // запускаем
                 }
@@ -217,6 +219,30 @@ namespace ShareDataInNetwork
                 });
             });
         }
+
+
+        /// <summary>
+        /// Initializing the found PC/Инициализация найденного компьютера
+        /// </summary>
+        /// <param name="name">Some name for PC/Какое-то имя компьютера</param>
+        /// <param name="ip">IP address of this PC/IP адрес этого ПК</param>
+        private void Initializing_PC(string name, IPAddress ip)
+        {
+            Application.Current.Dispatcher.Invoke((Action)delegate {
+                RemotePC remotePC = new RemotePC();
+                remotePC.namePc = name;
+                remotePC.ipPc = ip.ToString();
+                remotePC.widthForPicture = 120;
+                remotePC.heightForPicture = 120;
+                remotePC.maxheightForPictureh = 150;
+                remotePC.maxwidthForPicture = 150;
+                remotePC.widthAll = 220;
+                remotePC.heightAll = 175;
+                PlaceForFindedPC.Children.Add(remotePC);  //Display the initialized PC fro screen
+            });
+        }
+
+
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
