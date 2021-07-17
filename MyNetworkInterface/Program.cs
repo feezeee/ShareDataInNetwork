@@ -6,16 +6,16 @@ namespace MyNetworkInterface
     {
         static void Main(string[] args)
         {
-            IPMethods iPMethods = new IPMethods();
-            iPMethods.GetNetworkInformationAboutPCASYNC();
-            iPMethods.OnGettingNetworkInformationAboutPC += IPMethods_OnGettingNetworkInformationAboutPC;
+            IpMethods iPMethods = new IpMethods();
+            iPMethods.GetNetworkInformationAboutPcasync();
+            iPMethods.OnGettingNetworkInformationAboutPc += IPMethods_OnGettingNetworkInformationAboutPC;
             System.Threading.Thread.Sleep(5000);
             Console.Read();
         }
 
         private static void IPMethods_OnGettingNetworkInformationAboutPC(object sender, bool status)
         {
-            IPMethods iPMethods = (IPMethods)sender;
+            IpMethods iPMethods = (IpMethods)sender;
 
             Console.WriteLine(iPMethods.ReturnIpAddress());
             Console.WriteLine(iPMethods.ReturnNameInNetwork());

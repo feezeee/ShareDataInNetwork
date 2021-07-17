@@ -20,40 +20,40 @@ namespace EditLabelWindow
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class EditForIP : Window
+    public partial class EditForIp : Window
     {
         public enum Modes
         {
-            SimplyIP = 1,
-            SubnetIP = 2,
-            BroadcastIP = 3
+            SimplyIp = 1,
+            SubnetIp = 2,
+            BroadcastIp = 3
         }
 
-        IPAddress iPAddress;
-        Modes modes;
-        public EditForIP()
+        readonly IPAddress _iPAddress;
+        readonly Modes _modes;
+        public EditForIp()
         {
             InitializeComponent();
-            ConvertIp(iPAddress);
+            ConvertIp(_iPAddress);
         }
-        public EditForIP(IPAddress originalIP)
+        public EditForIp(IPAddress originalIp)
         {
             InitializeComponent();
-            iPAddress = originalIP;
-            ConvertIp(iPAddress);
+            _iPAddress = originalIp;
+            ConvertIp(_iPAddress);
         }
 
-        public EditForIP(IPAddress originalIP, Modes value)
+        public EditForIp(IPAddress originalIp, Modes value)
         {
             InitializeComponent();
-            iPAddress = originalIP;
-            ConvertIp(iPAddress);
-            modes = value;
+            _iPAddress = originalIp;
+            ConvertIp(_iPAddress);
+            _modes = value;
         }
         private void Accept_Click(object sender, RoutedEventArgs e)
         {
 
-            if (modes == Modes.SimplyIP)
+            if (_modes == Modes.SimplyIp)
             {
                 try
                 {
@@ -92,11 +92,11 @@ namespace EditLabelWindow
                 }
             }
 
-            if (modes == Modes.SubnetIP)
+            if (_modes == Modes.SubnetIp)
             {
                 try
                 {
-                    pred = -1;
+                    _pred = -1;
                     bool status = true;  
 
                     byte first = byte.Parse(renameBox1.Text);
@@ -165,7 +165,7 @@ namespace EditLabelWindow
         }
 
 
-        int pred = -1;
+        int _pred = -1;
         /// <summary>
         /// 
         /// </summary>
@@ -180,28 +180,28 @@ namespace EditLabelWindow
                 {
                     throw new ArgumentOutOfRangeException($"{value} должно быть от 0 до 255");
                 }
-                if (pred == 0 && value == 0)
+                if (_pred == 0 && value == 0)
                 {
                     return true;
                 }
-                if (pred != 0 && value == 0)
+                if (_pred != 0 && value == 0)
                 {
-                    pred = 0;
+                    _pred = 0;
                     return true;
                 }
-                if (pred != 0)
+                if (_pred != 0)
                 {
                     for (int i = 7; i != -1; i--)
                     {
                         value = value - (int)Math.Pow(2, i);
                         if (value == 0 && i > 0)
                         {
-                            pred = 0;
+                            _pred = 0;
                             return true;
                         }
                         else if (value == 0 && i == 0)
                         {
-                            pred = 1;
+                            _pred = 1;
                             return true;
                         }
                         else if (value < 0)
