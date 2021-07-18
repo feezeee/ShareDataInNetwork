@@ -52,7 +52,8 @@ namespace ShareDataInNetwork
             // Добавляем в List данный пк. Данный List содержит информацию о сети (к каким устройствам имеет доступ данный пк).
             _myNetwork.AddingNewPcInList(_currentPc);
 
-            _myNetwork.ReceivedInformationEvent += AddingPc;
+            _myNetwork.ReceivedInformationEvent += AddingPcInList;
+            _myNetwork.StatusAddedInList += DrawPcOnMonitor;
             
             // Определение потока. Анализ сети, в которой находится данный пк.
             Thread myThread = new Thread(new ThreadStart(CheckingSearchingStatus));
@@ -235,7 +236,14 @@ namespace ShareDataInNetwork
             });
         }
 
-        private void AddingPc(object sender, bool status)
+        
+        
+        /// <summary>
+        /// Добавление пк в List.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="status"></param>
+        private void AddingPcInList(object sender, bool status)
         {
             if (status)
             {
@@ -243,11 +251,22 @@ namespace ShareDataInNetwork
                 
                 Thread myThread = new Thread(new ParameterizedThreadStart(_myNetwork.AddingNewPcInList));
                 myThread.Start(remotePc);
-                
-                Initializing_PC(remotePc.ReturnNameInNetwork(),remotePc.ReturnIpAddress());
             }
         }
 
+        /// <summary>
+        /// Выполняется в случае появления нового пк в сети
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="status"></param>
+        private void DrawPcOnMonitor(IpParametrs sender, StatusExists status)
+        {
+            if (status == StatusExists.Added)
+            {
+                Initializing_PC(sender.ReturnNameInNetwork(),sender.ReturnIpAddress());
+            }
+        }
+        
         /// <summary>
         /// Initializing the found PC/Инициализация найденного компьютера
         /// </summary>

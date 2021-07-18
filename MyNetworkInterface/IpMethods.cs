@@ -34,26 +34,36 @@ namespace MyNetworkInterface
             set => _currentPc = value;
         }
 
+        public delegate void PcExistInListHandler(IpParametrs pc, StatusExists status);
+        public event PcExistInListHandler StatusAddedInList;
 
+        /// <summary>
+        /// Добавляет в List пк.
+        /// </summary>
+        /// <param name="pc"></param>
         public void AddingNewPcInList(object pc)
         {
             // Переменная, найдено ли совпадение в листе
             bool status = false;
 
             IpParametrs _pc = (IpParametrs) pc;
-            
-            foreach(IpParametrs element in _pcInNetwork)
-            {
-                if (element.ReturnIpAddress() == _pc.ReturnIpAddress())
-                {
-                    status = true;
-                    break;
-                }
-            }
 
-            if (!status)
+            status = ExistPcInList(_pc);
+            
+            if (status)
             {
+                StatusAddedInList?.Invoke(_pc, StatusExists.Exists);
+            }
+            
+            if (_pc.ReturnIpAddress() == _currentPc.ReturnIpAddress())
+            {
+                StatusAddedInList?.Invoke(_pc, StatusExists.LocalPc);
+            }
+            else if (!status)
+            {
+                // Добавляем в List
                 _pcInNetwork.Add(_pc);
+                StatusAddedInList?.Invoke(_pc, StatusExists.Added);
             }
         }
 
@@ -62,7 +72,7 @@ namespace MyNetworkInterface
             return _pcInNetwork;
         }
 
-        public bool FindningInformationAboutPcInList(IpParametrs recivedPc)
+        public bool ExistPcInList(IpParametrs recivedPc)
         {
             foreach (var pc in _pcInNetwork)
             {
@@ -83,11 +93,6 @@ namespace MyNetworkInterface
             {
                 try
                 {
-                    //foreach (var localaddress in CurentPC)
-                    //string BroadIP = "192.168.0.255";
-                    //{
-                    // создаем соект для работы по пратоколу UDP, в сети Internet, для передачи дейтаграмных сообщений
-
                     if (CurrentPc is null)
                     {
                         throw new ArgumentNullException(nameof(CurrentPc));
@@ -95,22 +100,22 @@ namespace MyNetworkInterface
 
                     if (CurrentPc.ReturnNameInNetwork() is null)
                     {
-                        throw new ArgumentNullException(nameof(CurrentPc.ReturnNameInNetwork));
+                        throw new ArgumentNullException(nameof(CurrentPc.ReturnNameInNetwork), "Не получено имя локального пк.");
                     }
 
                     if (CurrentPc.ReturnIpAddress() is null)
                     {
-                        throw new ArgumentNullException(nameof(CurrentPc.ReturnIpAddress));
+                        throw new ArgumentNullException(nameof(CurrentPc.ReturnIpAddress), "Не получен ip адрес локального пк.");
                     }
 
                     if (CurrentPc.ReturnSubnetMask() is null)
                     {
-                        throw new ArgumentNullException(nameof(CurrentPc.ReturnSubnetMask));
+                        throw new ArgumentNullException(nameof(CurrentPc.ReturnSubnetMask),"Не получена маска подсети локального пк.");
                     }
 
                     if (CurrentPc.ReturnBroadcastAddress() is null)
                     {
-                        throw new ArgumentNullException(nameof(CurrentPc.ReturnBroadcastAddress));
+                        throw new ArgumentNullException(nameof(CurrentPc.ReturnBroadcastAddress), "Не получен широковещательный адрес локального пк.");
                     }
 
                     Socket socketForBroadcasting =
@@ -138,6 +143,9 @@ namespace MyNetworkInterface
             
         }
 
+        /// <summary>
+        /// Получает и обрабатывает сообщения с широковещательного адреса
+        /// </summary>
         public void ReciveBroadcastOffer()
         {
             UdpClient listener = new UdpClient(LocalPort); // для прослушивания сообщений udp приходящих на локальный порт
