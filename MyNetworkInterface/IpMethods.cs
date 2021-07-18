@@ -16,10 +16,6 @@ namespace MyNetworkInterface
         {
             
         }
-        public IpMethods(IpParametrs currentPc)
-        {
-            _currentPc = currentPc;
-        }
         
         const int LocalPort = 8010; // порт для приема информации
         const int RemotePort = 8010; // порт для отправки информации
@@ -31,6 +27,13 @@ namespace MyNetworkInterface
         private List<IpParametrs> _pcInNetwork = new List<IpParametrs>();
         
         private IpParametrs _currentPc;
+
+        public IpParametrs CurrentPc
+        {
+            get => _currentPc;
+            set => _currentPc = value;
+        }
+
 
         public void AddingNewPcInList(object pc)
         {
@@ -76,45 +79,45 @@ namespace MyNetworkInterface
         /// </summary>
         public void SendBroadcastOfferToConnect()
         {
-            try
+            while (true)
             {
-                while (true)
+                try
                 {
                     //foreach (var localaddress in CurentPC)
                     //string BroadIP = "192.168.0.255";
                     //{
                     // создаем соект для работы по пратоколу UDP, в сети Internet, для передачи дейтаграмных сообщений
 
-                    if (_currentPc is null)
+                    if (CurrentPc is null)
                     {
-                        throw new ArgumentNullException(nameof(_currentPc));
+                        throw new ArgumentNullException(nameof(CurrentPc));
                     }
 
-                    if (_currentPc.ReturnNameInNetwork() is null)
+                    if (CurrentPc.ReturnNameInNetwork() is null)
                     {
-                        throw new ArgumentNullException(nameof(_currentPc.ReturnNameInNetwork));
+                        throw new ArgumentNullException(nameof(CurrentPc.ReturnNameInNetwork));
                     }
 
-                    if (_currentPc.ReturnIpAddress() is null)
+                    if (CurrentPc.ReturnIpAddress() is null)
                     {
-                        throw new ArgumentNullException(nameof(_currentPc.ReturnIpAddress));
+                        throw new ArgumentNullException(nameof(CurrentPc.ReturnIpAddress));
                     }
 
-                    if (_currentPc.ReturnSubnetMask() is null)
+                    if (CurrentPc.ReturnSubnetMask() is null)
                     {
-                        throw new ArgumentNullException(nameof(_currentPc.ReturnSubnetMask));
+                        throw new ArgumentNullException(nameof(CurrentPc.ReturnSubnetMask));
                     }
 
-                    if (_currentPc.ReturnBroadcastAddress() is null)
+                    if (CurrentPc.ReturnBroadcastAddress() is null)
                     {
-                        throw new ArgumentNullException(nameof(_currentPc.ReturnBroadcastAddress));
+                        throw new ArgumentNullException(nameof(CurrentPc.ReturnBroadcastAddress));
                     }
 
                     Socket socketForBroadcasting =
                         new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                    IPAddress broadcast = _currentPc?.ReturnBroadcastAddress();
+                    IPAddress broadcast = CurrentPc?.ReturnBroadcastAddress();
 
-                    var message = _currentPc.ReturnNameInNetwork();
+                    var message = CurrentPc.ReturnNameInNetwork();
 
 
                     byte[] buf = Encoding.ASCII.GetBytes(message); // кодируем сообщение из строки в битовый массив
@@ -127,11 +130,12 @@ namespace MyNetworkInterface
 
                     //}
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            
         }
 
         public void ReciveBroadcastOffer()
@@ -150,8 +154,8 @@ namespace MyNetworkInterface
 
                     recivedPc.SetNameInNetwork(name);
                     recivedPc.SetIpAddress(groupEp.Address);
-                    recivedPc.SetBroadcastAddress(_currentPc.ReturnBroadcastAddress());
-                    recivedPc.SetSubnetMask(_currentPc.ReturnSubnetMask());
+                    recivedPc.SetBroadcastAddress(CurrentPc.ReturnBroadcastAddress());
+                    recivedPc.SetSubnetMask(CurrentPc.ReturnSubnetMask());
                     
                     // Вызов события при успешном определении пк
                     ReceivedInformationEvent?.Invoke(recivedPc, true);

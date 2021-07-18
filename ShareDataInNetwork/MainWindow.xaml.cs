@@ -25,8 +25,8 @@ namespace ShareDataInNetwork
     public partial class MainWindow : Window
     {
         
+        IpParametrs _currentPc = new IpParametrs(); 
         IpMethods _myNetwork = new IpMethods();
-        IpParametrs _currentPc = new IpParametrs();
         public MainWindow()
         {
             InitializeComponent();
@@ -58,7 +58,12 @@ namespace ShareDataInNetwork
             Thread myThread = new Thread(new ThreadStart(CheckingSearchingStatus));
             
             // Запуск потока.
-            myThread.Start(); 
+            myThread.Start();
+
+            _myNetwork.CurrentPc = _currentPc;
+            
+            Thread sendBroadcastMessage = new Thread(new ThreadStart(_myNetwork.SendBroadcastOfferToConnect));
+            sendBroadcastMessage.Start();
         }
 
 
@@ -174,14 +179,14 @@ namespace ShareDataInNetwork
         private bool _search = false;
         private void CheckingSearchingStatus()
         {
-            Thread sendBroadcastMessage = new Thread(new ThreadStart(_myNetwork.SendBroadcastOfferToConnect));
-            sendBroadcastMessage.Start();
-            Thread receiveBroadcastMessage = new Thread(new ThreadStart(_myNetwork.ReciveBroadcastOffer));
-            receiveBroadcastMessage.Start();
             while (true)
             {
                 if (_searchingStatus && !_search)
                 {
+                    
+                    Thread receiveBroadcastMessage = new Thread(new ThreadStart(_myNetwork.ReciveBroadcastOffer));
+                    receiveBroadcastMessage.Start();
+                    
                     _search = true;
                     broadcastCurrentPc.MouseDoubleClick -= BroadcastCurrentPc_MouseDoubleClick;
                     subnetMaskCurrentPc.MouseDoubleClick -= SubnetMaskCurrentPc_MouseDoubleClick;
